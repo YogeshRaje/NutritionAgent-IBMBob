@@ -4,6 +4,7 @@ IBM Granite LLM interface with guardrails for Nutrition Agentic AI
 from __future__ import annotations
 
 import re
+import time
 from typing import Optional
 
 from ibm_watsonx_ai import APIClient, Credentials
@@ -63,15 +64,33 @@ class NutritionLLMClient:
 
     # ─────────────────────────── public API ────────────────────────────────
 
-    def generate(self, prompt: str) -> str:
-        """Run guardrails, call IBM Granite, return the final text."""
+    def generate(self, prompt: str, retries: int = 3, backoff: float = 15.0) -> str:
+        """Run guardrails, call IBM Granite with retry on 429, return the final text."""
         refusal = self._input_guardrail(prompt)
         if refusal:
             return refusal
 
-        response = self._model.generate_text(prompt=prompt)
-        result = self._output_guardrail(response)
-        return result
+        last_exc: Exception = RuntimeError("No attempts made")
+        for attempt in range(1, retries + 1):
+            try:
+                response = self._model.generate_text(prompt=prompt)
+                return self._output_guardrail(response)
+            except Exception as exc:
+                msg = str(exc)
+                # Retry only on rate-limit (429) or transient network errors
+                is_retryable = (
+                    "429" in msg
+                    or "consumption_limit_reached" in msg
+                    or "ConnectTimeout" in msg
+                    or "timeout" in msg.lower()
+                )
+                last_exc = exc
+                if is_retryable and attempt < retries:
+                    wait = backoff * attempt
+                    time.sleep(wait)
+                    continue
+                raise
+        raise last_exc  # pragma: no cover
 
     def generate_nutrition_plan(self, user_profile: dict) -> str:
         """Build a structured prompt from user_profile and call IBM Granite."""
