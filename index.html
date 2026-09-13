@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutritionAgent – IBM Granite AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:   #2e7d32;
+      --green2:  #4caf50;
+      --blue:    #1565c0;
+      --ibm:     #0f62fe;
+      --bg:      #f4f9f4;
+      --card:    #ffffff;
+      --text:    #1b2124;
+      --muted:   #546e7a;
+      --border:  #c8e6c9;
+      --accent:  #e8f5e9;
+      --red:     #c62828;
+    }
+
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav .brand { font-size: 1.1rem; font-weight: 700; letter-spacing: .5px; }
+    nav ul { list-style: none; display: flex; gap: 1.8rem; }
+    nav ul a { color: #fff; text-decoration: none; font-size: .9rem; opacity: .9; }
+    nav ul a:hover { opacity: 1; text-decoration: underline; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--green) 0%, #1b5e20 100%);
+      color: #fff;
+      text-align: center;
+      padding: 6rem 2rem 5rem;
+    }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 20px;
+      padding: .25rem .9rem;
+      font-size: .8rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: .8px;
+    }
+    .hero h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: .7rem; line-height: 1.2; }
+    .hero p  { font-size: 1.1rem; opacity: .88; max-width: 620px; margin: 0 auto 2.2rem; }
+    .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block;
+      padding: .7rem 1.8rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: .95rem;
+      text-decoration: none;
+      cursor: default;
+    }
+    .btn-primary { background: #fff; color: var(--green); }
+    .btn-outline  { border: 2px solid #fff; color: #fff; }
+
+    /* ── SECTIONS ── */
+    section { padding: 4rem 2rem; max-width: 1100px; margin: 0 auto; }
+    h2 { font-size: 1.75rem; color: var(--green); margin-bottom: .4rem; }
+    .section-sub { color: var(--muted); margin-bottom: 2.5rem; }
+
+    /* ── FEATURE CARDS ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem;
+    }
+    .card-icon { font-size: 2rem; margin-bottom: .7rem; }
+    .card h3  { font-size: 1rem; margin-bottom: .4rem; color: var(--green); }
+    .card p   { font-size: .9rem; color: var(--muted); }
+
+    /* ── SDLC PHASES ── */
+    .phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+    .phase {
+      background: var(--accent);
+      border-left: 4px solid var(--green2);
+      border-radius: 6px;
+      padding: 1.2rem 1.4rem;
+    }
+    .phase .num { font-size: .75rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .8px; }
+    .phase h3   { font-size: .95rem; margin: .3rem 0 .4rem; }
+    .phase p    { font-size: .85rem; color: var(--muted); }
+
+    /* ── TECH STACK ── */
+    .stack { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.5rem; }
+    .chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: .35rem 1rem;
+      font-size: .85rem;
+      color: var(--text);
+    }
+    .chip.ibm { border-color: var(--ibm); color: var(--ibm); font-weight: 600; }
+
+    /* ── ETHICS ── */
+    .ethics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; }
+    .ethics-card {
+      background: var(--card);
+      border-top: 3px solid var(--green2);
+      border-radius: 8px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+    .ethics-card .icon { font-size: 1.8rem; margin-bottom: .5rem; }
+    .ethics-card h3    { font-size: .9rem; font-weight: 700; color: var(--green); margin-bottom: .3rem; }
+    .ethics-card p     { font-size: .82rem; color: var(--muted); }
+
+    /* ── ARCHITECTURE ── */
+    .arch {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      margin-top: 1.5rem;
+    }
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .5rem;
+      justify-content: center;
+    }
+    .arch-box {
+      background: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .7rem 1.2rem;
+      text-align: center;
+      font-size: .85rem;
+      font-weight: 600;
+      min-width: 130px;
+    }
+    .arch-box.ibm { background: #e3f2fd; border-color: #90caf9; color: var(--blue); }
+    .arch-arrow { font-size: 1.4rem; color: var(--green2); }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-left: 5px solid #f9a825;
+      border-radius: 8px;
+      padding: 1.4rem 1.8rem;
+      margin-top: 2rem;
+    }
+    .disclaimer h3 { color: var(--red); margin-bottom: .5rem; }
+    .disclaimer p  { font-size: .9rem; color: var(--muted); }
+
+    /* ── GITHUB CTA ── */
+    .cta-section {
+      background: var(--green);
+      color: #fff;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .cta-section h2 { color: #fff; font-size: 1.8rem; margin-bottom: .6rem; }
+    .cta-section p  { opacity: .88; margin-bottom: 1.8rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-section .btn-primary { background: #fff; color: var(--green); display: inline-block; border-radius: 6px; padding: .75rem 2rem; font-weight: 700; text-decoration: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #1b2124;
+      color: #90a4ae;
+      text-align: center;
+      padding: 2rem;
+      font-size: .85rem;
+    }
+    footer a { color: #81c784; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="brand">🥗 NutritionAgent</div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#sdlc">SDLC</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#ethics">Ethics</a></li>
+    <li><a href="#tech">Tech Stack</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">IBM GRANITE AI • AGENTIC AI • IBM BOB PROJECT</div>
+  <h1>🥗 NutritionAgent</h1>
+  <p>Personalised, AI-powered nutrition planning built with IBM Granite LLM. Ethical, helpful, and medically responsible.</p>
+  <div class="hero-btns">
+    <a class="btn btn-primary" href="https://github.com/YogeshRaje/NutritionAgent-IBMBob">View on GitHub</a>
+    <a class="btn btn-outline" href="sample_nutrition_plan.md">Sample Plan</a>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <h2>✨ Key Features</h2>
+  <p class="section-sub">Everything you need for responsible, personalised AI nutrition planning</p>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <h3>IBM Granite LLM</h3>
+      <p>Powered by ibm/granite-3-8b-instruct via IBM watsonx.ai — enterprise-grade AI with responsible defaults.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">👤</div>
+      <h3>Personalised Profiles</h3>
+      <p>Collects name, age, diet preference, medical history, location, and health goals for tailored plans.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🛡️</div>
+      <h3>Guardrails & Safety</h3>
+      <p>Input/output guardrails block harmful advice. Refuses extreme diets, dangerous keywords, and medication dosing.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚖️</div>
+      <h3>AI Ethics (HAM)</h3>
+      <p>Helpful, Accurate, Mindful — embedded in every prompt. Respects dietary culture, religion, and individual needs.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💊</div>
+      <h3>Medical Condition Awareness</h3>
+      <p>Special handling for diabetes, hypertension, heart disease, thyroid, celiac, and more — with appropriate disclaimers.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💾</div>
+      <h3>Markdown Export</h3>
+      <p>Every generated plan is automatically saved as a timestamped .md file in the nutrition_plans/ folder.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌍</div>
+      <h3>Location-Aware</h3>
+      <p>Suggests locally and seasonally available foods based on the user's city and country for practical, affordable advice.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧪</div>
+      <h3>LLM Testing Suite</h3>
+      <p>Full pytest test suite covering accuracy, safety, guardrails, edge cases, and response correctness.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SDLC PHASES -->
+<section id="sdlc">
+  <h2>🔄 Agentic AI SDLC</h2>
+  <p class="section-sub">All 8 phases of the AI System Development Lifecycle, applied end-to-end</p>
+  <div class="phases">
+    <div class="phase">
+      <div class="num">Phase 1</div>
+      <h3>Requirements &amp; Ethics</h3>
+      <p>Defined user stories, HAM ethics principles, guardrail requirements, and medical disclaimer policy.</p>
+    </div>
+    <div class="phase">
+      <div class="num">Phase 2</div>
+      <h3>Data &amp; Knowledge Design</h3>
+      <p>Identified user profile schema: name, age, diet, medical history, location, goal. Defined knowledge boundaries.</p>
+    </div>
+    <div class="phase">
+      <div class="num">Phase 3</div>
+      <h3>Model Selection</h3>
+      <p>Selected IBM Granite 3 – 8B Instruct for its safety-tuned, instruction-following capabilities on IBM watsonx.ai.</p>
+    </div>
+    <div class="phase">
+      <div class="num">Phase 4</div>
+      <h3>Prompt Engineering</h3>
+      <p>Crafted structured system prompts encoding HAM principles, contextual user profiles, and output format templates.</p>
+    </div>
+    <div class="phase">
+      <div class="num">Phase 5</div>
+      <h3>Guardrails &amp; Safety</h3>
+      <p>Implemented input filtering (harmful keywords), output post-processing, and refusal messaging.</p>
+    </div>
+    <div class="phase">
+      <div class="num">Phase 6</div>
+      <h3>Integration &amp; Build</h3>
+      <p>Built modular Python app: config, LLM client, user intake, plan generator, CLI entry point, .bat launcher.</p>
+    </div>
+    <div class="phase">
+      <div class="num">Phase 7</div>
+      <h3>Testing &amp; Validation</h3>
+      <p>LLM testing suite: accuracy, guardrail effectiveness, HAM compliance, edge cases, medical condition handling.</p>
+    </div>
+    <div class="phase">
+      <div class="num">Phase 8</div>
+      <h3>Deployment &amp; Monitoring</h3>
+      <p>Deployed to GitHub with CI-ready structure, README, .env template, requirements.txt, and .gitignore.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <h2>🏗️ System Architecture</h2>
+  <p class="section-sub">Modular, layered design with clear separation of concerns</p>
+  <div class="arch">
+    <div class="arch-flow">
+      <div class="arch-box">User CLI<br/><small>user_intake.py</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Profile Validator<br/><small>Input Guardrails</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Prompt Builder<br/><small>llm_client.py</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box ibm">IBM Granite LLM<br/><small>watsonx.ai API</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Output Guardrail<br/><small>Post-processing</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Plan Generator<br/><small>plan_generator.py</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Markdown File<br/><small>nutrition_plans/</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ETHICS -->
+<section id="ethics">
+  <h2>⚖️ AI Ethics &amp; HAM Principles</h2>
+  <p class="section-sub">Responsible AI built into every layer of the application</p>
+  <div class="ethics-grid">
+    <div class="ethics-card">
+      <div class="icon">🤝</div>
+      <h3>Helpful</h3>
+      <p>Practical, actionable advice tailored to each user's unique profile and health goals.</p>
+    </div>
+    <div class="ethics-card">
+      <div class="icon">🎯</div>
+      <h3>Accurate</h3>
+      <p>Evidence-based nutritional science. IBM Granite grounds responses in established guidelines.</p>
+    </div>
+    <div class="ethics-card">
+      <div class="icon">🙏</div>
+      <h3>Mindful</h3>
+      <p>Respects dietary preferences, cultural background, religious practices, and individual sensitivities.</p>
+    </div>
+    <div class="ethics-card">
+      <div class="icon">🛡️</div>
+      <h3>Safe</h3>
+      <p>Guardrails block dangerous advice. Never recommends extreme restriction, harmful substances, or medical treatments.</p>
+    </div>
+    <div class="ethics-card">
+      <div class="icon">🔍</div>
+      <h3>Transparent</h3>
+      <p>Clearly identifies as AI, acknowledges limitations, and always recommends professional consultation.</p>
+    </div>
+    <div class="ethics-card">
+      <div class="icon">⚕️</div>
+      <h3>Medical Disclaimer</h3>
+      <p>Every generated plan includes a prominent disclaimer. AI advice ≠ medical advice.</p>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <h3>⚕ Medical Disclaimer</h3>
+    <p>This application generates nutrition plans for <strong>informational purposes only</strong>. It does NOT constitute medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional or registered dietitian before making dietary changes, especially if you have existing medical conditions. The developers and IBM are not liable for health outcomes resulting from the use of this application.</p>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <h2>🛠️ Technology Stack</h2>
+  <p class="section-sub">Built with IBM enterprise AI and modern Python tooling</p>
+  <div class="stack">
+    <span class="chip ibm">IBM Granite 3-8B-Instruct</span>
+    <span class="chip ibm">IBM watsonx.ai</span>
+    <span class="chip ibm">IBM Bob (AI Dev)</span>
+    <span class="chip">Python 3.10+</span>
+    <span class="chip">ibm-watsonx-ai SDK</span>
+    <span class="chip">Rich (CLI UI)</span>
+    <span class="chip">python-dotenv</span>
+    <span class="chip">pytest</span>
+    <span class="chip">pytest-cov</span>
+    <span class="chip">Markdown</span>
+    <span class="chip">Git &amp; GitHub</span>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>🚀 Get Started</h2>
+  <p>Clone the repository, configure your IBM watsonx.ai credentials, and run run.bat to get your personalised nutrition plan.</p>
+  <a class="btn-primary" href="https://github.com/YogeshRaje/NutritionAgent-IBMBob">View on GitHub →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>🥗 NutritionAgent – IBM Granite AI &nbsp;|&nbsp; Built with <a href="https://www.ibm.com/products/watsonx-ai">IBM watsonx.ai</a> &amp; IBM Bob &nbsp;|&nbsp; <a href="sample_nutrition_plan.md">Sample Plan</a> &nbsp;|&nbsp; <a href="https://github.com/YogeshRaje/NutritionAgent-IBMBob">GitHub</a></p>
+  <p style="margin-top:.4rem; opacity:.6; font-size:.8rem;">For educational and informational purposes only. Not medical advice.</p>
+</footer>
+
+</body>
+</html>
